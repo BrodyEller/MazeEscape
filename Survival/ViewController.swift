@@ -11,6 +11,7 @@ import SceneKit
 
 class ViewController: UIViewController {
     @IBOutlet weak var sceneView: SCNView!
+    @IBOutlet weak var gameOverLabel: UILabel!
     
     var gameScene: SCNScene!
     
@@ -19,6 +20,7 @@ class ViewController: UIViewController {
     var cameraFollowNode: SCNNode!
     var alienNode: SCNNode!
     var lightFollowNode: SCNNode!
+    var scientistNode: SCNNode!
     
     var jumpLeftAction: SCNAction!
     var jumpRightAction: SCNAction!
@@ -71,6 +73,7 @@ class ViewController: UIViewController {
             cameraNode.constraints = [SCNLookAtConstraint (target: alienNode)]
         cameraFollowNode = gameScene.rootNode.childNodeWithName("CameraFollow", recursively: true)!
         lightFollowNode = gameScene.rootNode.childNodeWithName("LightFollow", recursively: true)!
+        scientistNode = gameScene.rootNode.childNodeWithName("scientist", recursively: true)!
         
         collisionNode = gameScene.rootNode.childNodeWithName("Collision", recursively: true)!
         frontCollisionNode = gameScene.rootNode.childNodeWithName("Front", recursively: true)!
@@ -123,13 +126,13 @@ class ViewController: UIViewController {
         // 4
         let bounceAction = SCNAction.sequence([bounceUpAction, bounceDownAction])
         // 5
-        let moveLeftAction = SCNAction.moveByX(-1.0, y: 0, z: 0, duration:
+        let moveLeftAction = SCNAction.moveByX(-0.5, y: 0, z: 0, duration:
             duration)
-        let moveRightAction = SCNAction.moveByX(1.0, y: 0, z: 0, duration:
+        let moveRightAction = SCNAction.moveByX(0.5, y: 0, z: 0, duration:
             duration)
-        let moveForwardAction = SCNAction.moveByX(0, y: 0, z: -1.0, duration:
+        let moveForwardAction = SCNAction.moveByX(0, y: 0, z: -0.5, duration:
             duration)
-        let moveBackwardAction = SCNAction.moveByX(0, y: 0, z: 1.0, duration:
+        let moveBackwardAction = SCNAction.moveByX(0, y: 0, z: 0.5, duration:
             duration)
         // 6
         let turnLeftAction = SCNAction.rotateToX(0, y: 90 * DegreesToRadians, z: 0, duration: duration, shortestUnitArc: true)
@@ -179,6 +182,10 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    override func prefersStatusBarHidden() -> Bool {
+        return true
+    }
 
 
 }
@@ -188,6 +195,12 @@ extension ViewController: SCNSceneRendererDelegate {
         cameraFollowNode.position = alienNode.position
         lightFollowNode.position = alienNode.position
         collisionNode.position = alienNode.position
+        let distance = sqrt(((scientistNode.position.x - alienNode.position.x) * (scientistNode.position.x - alienNode.position.x)) + ((scientistNode.position.z - alienNode.position.z) * (scientistNode.position.z - alienNode.position.z)))
+        
+        if distance <= 0.5 {
+            //Game Loss
+            print("loss")
+        }
     }
 }
 
